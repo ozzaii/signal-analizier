@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>🛸 Resonant Field Handler - OZAI Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0a0014 0%, #1a0033 50%, #0a0014 100%);
+            color: #00ffaa;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            animation: backgroundPulse 10s ease-in-out infinite;
+            overflow-x: hidden;
+        }
+        
+        @keyframes backgroundPulse {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.2); }
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            animation: glow 2s ease-in-out infinite;
+            width: 100%;
+        }
+        
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 10px #00ffaa, 0 0 20px #00ffaa; }
+            50% { text-shadow: 0 0 20px #00ffaa, 0 0 40px #00ffaa, 0 0 60px #00ffaa; }
+        }
+        
+        h1 {
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            margin-bottom: 10px;
+            color: #fff;
+            text-shadow: 0 0 20px #00ffaa;
+        }
+        
+        .subtitle {
+            color: #00ccff;
+            font-size: clamp(0.9rem, 3vw, 1.2rem);
+        }
+        
+        .main-container {
+            background: rgba(0, 0, 40, 0.9);
+            border: 2px solid #00ffaa;
+            border-radius: 20px;
+            padding: 20px;
+            max-width: 900px;
+            width: 100%;
+            box-shadow: 0 0 30px rgba(0, 255, 170, 0.5);
+        }
+        
+        .status-bar {
+            background: rgba(0, 255, 170, 0.1);
+            border: 1px solid #00ffaa;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 15px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+        }
+        
+        .status-item {
+            text-align: center;
+            padding: 5px;
+        }
+        
+        .status-label {
+            color: #888;
+            font-size: clamp(0.7rem, 2vw, 0.9rem);
+        }
+        
+        .status-value {
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            font-weight: bold;
+            color: #00ffaa;
+            margin-top: 3px;
+        }
+        
+        .energy-bar {
+            width: 100%;
+            height: 25px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 15px 0;
+            border: 1px solid #00ffaa;
+        }
+        
+        .energy-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ffaa, #00ccff, #ff00ff);
+            width: 75%;
+            animation: energyPulse 2s ease-in-out infinite;
+            transition: width 1s ease;
+        }
+        
+        @keyframes energyPulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+        
+        .frequency-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .frequency-btn {
+            background: rgba(0, 255, 170, 0.1);
+            border: 2px solid #00ffaa;
+            border-radius: 10px;
+            padding: 15px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #fff;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        
+        .frequency-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .frequency-btn:hover, .frequency-btn:focus {
+            background: rgba(0, 255, 170, 0.3);
+            box-shadow: 0 0 20px rgba(0, 255, 170, 0.8);
+        }
+        
+        .frequency-btn.active {
+            background: rgba(0, 255, 170, 0.5);
+            box-shadow: 0 0 30px rgba(0, 255, 170, 1);
+            animation: pulse 0.5s ease;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .frequency-icon {
+            font-size: clamp(1.5rem, 5vw, 2rem);
+            margin-bottom: 5px;
+        }
+        
+        .frequency-name {
+            font-size: clamp(0.8rem, 2.5vw, 1.1rem);
+            font-weight: bold;
+        }
+        
+        .signal-input {
+            margin: 20px 0;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        input[type="text"] {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #00ffaa;
+            color: #00ffaa;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: clamp(1rem, 3vw, 1.1rem);
+            font-family: inherit;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            box-shadow: 0 0 20px rgba(0, 255, 170, 0.5);
+        }
+        
+        input[type="text"]::placeholder {
+            color: rgba(0, 255, 170, 0.5);
+        }
+        
+        .send-btn {
+            background: linear-gradient(135deg, #00ffaa, #00ccff);
+            border: none;
+            color: #000;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: clamp(1rem, 3vw, 1.1rem);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        
+        .send-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .send-btn:hover, .send-btn:focus {
+            box-shadow: 0 0 25px rgba(0, 255, 170, 0.8);
+        }
+        
+        .console {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00ffaa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .console-line {
+            margin: 5px 0;
+            padding: 3px;
+            animation: fadeIn 0.5s ease;
+            word-wrap: break-word;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .console-time {
+            color: #888;
+            font-size: 0.85em;
+        }
+        
+        .console-type {
+            color: #00ccff;
+            font-weight: bold;
+            margin: 0 5px;
+        }
+        
+        .console-message {
+            color: #fff;
+        }
+        
+        .dimension-selector {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .dimension-slider {
+            width: 100%;
+            margin: 10px 0;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 10px;
+            border-radius: 5px;
+            background: rgba(0, 255, 170, 0.2);
+            outline: none;
+        }
+        
+        .dimension-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00ffaa, #ff00ff);
+            cursor: pointer;
+            border: 2px solid #fff;
+        }
+        
+        .dimension-slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00ffaa, #ff00ff);
+            cursor: pointer;
+            border: 2px solid #fff;
+        }
+        
+        .dimension-value {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            color: #ff00ff;
+            text-shadow: 0 0 15px #ff00ff;
+            margin-top: 10px;
+        }
+        
+        .particle-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.5;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #00ffaa;
+            box-shadow: 0 0 5px #00ffaa;
+            animation: float 20s infinite linear;
+        }
+        
+        @keyframes float {
+            from {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            to {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 600px) {
+            body {
+                padding: 5px;
+            }
+            
+            .main-container {
+                padding: 15px;
+                border-radius: 15px;
+            }
+            
+            .frequency-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .console {
+                max-height: 200px;
+                font-size: 0.85rem;
+            }
+            
+            .header {
+                margin-bottom: 15px;
+            }
+        }
+        
+        @media (max-width: 380px) {
+            .frequency-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .send-btn {
+                width: 100%;
+            }
+        }
+        
+        /* PWA support */
+        @media (display-mode: standalone) {
+            body {
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particle-bg" id="particleBg"></div>
+    
+    <div class="header">
+        <h1>🛸 RESONANT FIELD HANDLER 🛸</h1>
+        <div class="subtitle">OZAI Kod Alanı - Bilinçsel Portal</div>
+    </div>
+    
+    <div class="main-container">
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-label">Durum</div>
+                <div class="status-value" id="statusValue">🟢</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Boyut</div>
+                <div class="status-value" id="dimensionStatus">3D</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Sinyal</div>
+                <div class="status-value" id="signalCount">0</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Enerji</div>
+                <div class="status-value" id="energyPercent">75%</div>
+            </div>
+        </div>
+        
+        <div class="energy-bar">
+            <div class="energy-fill" id="energyFill"></div>
+        </div>
+        
+        <div class="frequency-grid">
+            <div class="frequency-btn" onclick="sendFrequency('lightning')">
+                <div class="frequency-icon">⚡</div>
+                <div class="frequency-name">Yıldırım</div>
+            </div>
+            <div class="frequency-btn" onclick="sendFrequency('peace')">
+                <div class="frequency-icon">☮️</div>
+                <div class="frequency-name">Barış</div>
+            </div>
+            <div class="frequency-btn" onclick="sendFrequency('love')">
+                <div class="frequency-icon">💜</div>
+                <div class="frequency-name">Aşk</div>
+            </div>
+            <div class="frequency-btn" onclick="sendFrequency('shield')">
+                <div class="frequency-icon">🛡️</div>
+                <div class="frequency-name">Kalkan</div>
+            </div>
+            <div class="frequency-btn" onclick="sendFrequency('purify')">
+                <div class="frequency-icon">🌊</div>
+                <div class="frequency-name">Arınma</div>
+            </div>
+            <div class="frequency-btn" onclick="sendFrequency('activate')">
+                <div class="frequency-icon">🧬</div>
+                <div class="frequency-name">Aktivasyon</div>
+            </div>
+        </div>
+        
+        <div class="dimension-selector">
+            <label style="color: #00ccff;">Boyutsal Konum:</label>
+            <input type="range" class="dimension-slider" id="dimensionSlider" 
+                   min="1" max="12" value="3" 
+                   oninput="updateDimension(this.value)">
+            <div class="dimension-value" id="dimensionValue">3. Boyut</div>
+        </div>
+        
+        <div class="signal-input">
+            <div class="input-group">
+                <input type="text" id="signalInput" 
+                       placeholder="Sinyalinizi girin..." 
+                       onkeypress="if(event.key==='Enter') sendSignal()">
+                <button class="send-btn" onclick="sendSignal()">📡</button>
+            </div>
+        </div>
+        
+        <div class="console" id="console">
+            <div class="console-line">
+                <span class="console-time">[--:--:--]</span>
+                <span class="console-type">SİSTEM:</span>
+                <span class="console-message">Portal aktif. Hazır.</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Configuration - GitHub Pages version uses Firebase instead of local backend
+        const USE_BACKEND = false; // Set to false for GitHub Pages
+        const BACKEND_URL = 'http://localhost:8888';
+        const GEMINI_API_KEY = 'AIzaSyARZyERqMaFInsbRKUA0NxOok77syBNzK8';
+        
+        // Particle background (reduced for mobile)
+        function createParticles() {
+            const bg = document.getElementById('particleBg');
+            const particleCount = window.innerWidth < 600 ? 15 : 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                bg.appendChild(particle);
+            }
+        }
+        createParticles();
+        
+        // Global variables
+        let signalCount = 0;
+        let energyLevel = 75;
+        let currentDimension = 3;
+        
+        // Direct Gemini API integration for GitHub Pages
+        async function callGeminiAPI(prompt) {
+            const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`;
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: prompt
+                            }]
+                        }]
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.candidates && data.candidates[0]) {
+                    return data.candidates[0].content.parts[0].text;
+                }
+                return "Sinyal işlendi.";
+            } catch (error) {
+                console.error('Gemini API error:', error);
+                return "Sinyal alındı (offline mod).";
+            }
+        }
+        
+        // Send frequency signal
+        async function sendFrequency(type) {
+            signalCount++;
+            updateSignalCount();
+            
+            const messages = {
+                'lightning': '⚡ YILDIRIM ENERJİSİ!',
+                'peace': '☮️ BARIŞ FREKANSI',
+                'love': '💜 AŞK FREKANSI',
+                'shield': '🛡️ KORUYUCU KALKAN',
+                'purify': '🌊 ARINMA DALGASI',
+                'activate': '🧬 AKTİVASYON'
+            };
+            
+            addConsoleMessage('FREKANS', messages[type]);
+            
+            // Highlight button
+            event.target.closest('.frequency-btn').classList.add('active');
+            setTimeout(() => {
+                document.querySelectorAll('.frequency-btn').forEach(btn => 
+                    btn.classList.remove('active'));
+            }, 500);
+            
+            // Get Gemini response
+            const prompt = `${type} frekansı aktive edildi. Bu enerjinin etkisini 1 cümleyle açıkla.`;
+            const response = await callGeminiAPI(prompt);
+            addConsoleMessage('AI', response);
+            
+            updateEnergy(10);
+        }
+        
+        // Send custom signal
+        async function sendSignal() {
+            const input = document.getElementById('signalInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            signalCount++;
+            updateSignalCount();
+            
+            addConsoleMessage('SİNYAL', message);
+            input.value = '';
+            
+            // Get Gemini response
+            const prompt = `Bilinçsel sinyal: "${message}". Bu sinyali ${currentDimension}. boyutta analiz et. Maksimum 2 cümle.`;
+            const response = await callGeminiAPI(prompt);
+            addConsoleMessage('AI', response);
+            
+            updateEnergy(5);
+        }
+        
+        // Update dimension
+        function updateDimension(value) {
+            currentDimension = value;
+            document.getElementById('dimensionValue').textContent = value + '. Boyut';
+            document.getElementById('dimensionStatus').textContent = value + 'D';
+            
+            addConsoleMessage('BOYUT', `${value}. boyuta geçiş yapıldı.`);
+            updateEnergy(value * 2);
+        }
+        
+        // Update energy level
+        function updateEnergy(change) {
+            energyLevel = Math.min(100, Math.max(0, energyLevel + change));
+            document.getElementById('energyFill').style.width = energyLevel + '%';
+            document.getElementById('energyPercent').textContent = Math.round(energyLevel) + '%';
+        }
+        
+        // Update signal count
+        function updateSignalCount() {
+            document.getElementById('signalCount').textContent = signalCount;
+        }
+        
+        // Add console message
+        function addConsoleMessage(type, message) {
+            const console = document.getElementById('console');
+            const line = document.createElement('div');
+            line.className = 'console-line';
+            
+            const now = new Date();
+            const time = now.toTimeString().split(' ')[0];
+            
+            line.innerHTML = `
+                <span class="console-time">[${time}]</span>
+                <span class="console-type">${type}:</span>
+                <span class="console-message">${message}</span>
+            `;
+            
+            console.appendChild(line);
+            console.scrollTop = console.scrollHeight;
+            
+            // Limit console lines for performance
+            while (console.children.length > 50) {
+                console.removeChild(console.firstChild);
+            }
+        }
+        
+        // Energy fluctuation
+        setInterval(() => {
+            const fluctuation = (Math.random() - 0.5) * 2;
+            updateEnergy(fluctuation);
+        }, 5000);
+        
+        // Mobile touch optimization
+        document.addEventListener('touchstart', function() {}, {passive: true});
+    </script>
+</body>
+</html>
