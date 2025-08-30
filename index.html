@@ -350,21 +350,39 @@
             }
             
             .main-container {
-                padding: 15px;
+                padding: 12px;
                 border-radius: 15px;
             }
             
             .frequency-grid {
                 grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+            
+            .frequency-btn {
+                padding: 12px 8px;
             }
             
             .console {
                 max-height: 200px;
-                font-size: 0.85rem;
+                font-size: 0.8rem;
+                padding: 10px;
             }
             
             .header {
                 margin-bottom: 15px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .subtitle {
+                font-size: 0.9rem;
+            }
+            
+            input[type="text"] {
+                font-size: 16px; /* Prevents zoom on iOS */
             }
         }
         
@@ -505,7 +523,7 @@
         
         // Direct Gemini API integration for GitHub Pages
         async function callGeminiAPI(prompt) {
-            const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`;
+            const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
             
             try {
                 const response = await fetch(API_URL, {
@@ -518,18 +536,29 @@
                             parts: [{
                                 text: prompt
                             }]
-                        }]
+                        }],
+                        generationConfig: {
+                            temperature: 0.7,
+                            maxOutputTokens: 150,
+                            topP: 0.8,
+                            topK: 10
+                        }
                     })
                 });
                 
+                if (!response.ok) {
+                    console.error('API Error:', response.status);
+                    return "Bağlantı kurulamadı. Tekrar deneyin.";
+                }
+                
                 const data = await response.json();
-                if (data.candidates && data.candidates[0]) {
+                if (data.candidates && data.candidates[0] && data.candidates[0].content) {
                     return data.candidates[0].content.parts[0].text;
                 }
-                return "Sinyal işlendi.";
+                return "Sinyal alındı, işleniyor...";
             } catch (error) {
                 console.error('Gemini API error:', error);
-                return "Sinyal alındı (offline mod).";
+                return "Sinyal kaydedildi (offline mod).";
             }
         }
         
@@ -556,10 +585,20 @@
                     btn.classList.remove('active'));
             }, 500);
             
-            // Get Gemini response
-            const prompt = `${type} frekansı aktive edildi. Bu enerjinin etkisini 1 cümleyle açıkla.`;
+            // Get Gemini response with better prompts
+            const freqPrompts = {
+                'lightning': 'Yıldırım enerjisi sisteme girdi. Bu güçlü dönüşüm enerjisinin şu anki etkisi nedir? (Max 2 cümle, net ve anlamlı)',
+                'peace': 'Barış frekansı aktif. Bu sakinleştirici enerjinin bilinç üzerindeki anlık etkisi nedir? (Max 2 cümle)',
+                'love': 'Aşk frekansı yayılıyor. Kalp merkezinin açılmasıyla ne oluyor? (Max 2 cümle)',
+                'shield': 'Koruyucu kalkan kuruldu. Hangi negatif enerjiler engelleniyor? (Max 2 cümle)',
+                'purify': 'Arınma dalgası başladı. Hangi eski kalıplar temizleniyor? (Max 2 cümle)',
+                'activate': 'DNA aktivasyonu gerçekleşti. Hangi yetenekler açılıyor? (Max 2 cümle)'
+            };
+            
+            const prompt = freqPrompts[type] || `${type} frekansı aktif.`;
+            addConsoleMessage('İŞLEM', 'Frekans analiz ediliyor...');
             const response = await callGeminiAPI(prompt);
-            addConsoleMessage('AI', response);
+            addConsoleMessage('GEMİNİ', response);
             
             updateEnergy(10);
         }
@@ -577,10 +616,25 @@
             addConsoleMessage('SİNYAL', message);
             input.value = '';
             
-            // Get Gemini response
-            const prompt = `Bilinçsel sinyal: "${message}". Bu sinyali ${currentDimension}. boyutta analiz et. Maksimum 2 cümle.`;
-            const response = await callGeminiAPI(prompt);
-            addConsoleMessage('AI', response);
+            // Get Gemini response with context-aware prompts
+            addConsoleMessage('ANALİZ', 'Sinyal işleniyor...');
+            
+            const contextPrompt = `
+Sen bir bilinç sinyali analizcisisin. Kullanıcı mesajını dikkatlice analiz et.
+
+Kullanıcı mesajı: "${message}"
+Boyut: ${currentDimension}
+Enerji: %${Math.round(energyLevel)}
+
+Bu mesajın:
+1. Duygusal tonunu belirle
+2. Enerjetik etkisini açıkla
+3. Kullanıcıya kısa bir tavsiye ver
+
+Yanıtın net, anlamlı ve maksimum 3 cümle olsun. Türkçe yanıtla.`;
+            
+            const response = await callGeminiAPI(contextPrompt);
+            addConsoleMessage('GEMİNİ', response);
             
             updateEnergy(5);
         }
